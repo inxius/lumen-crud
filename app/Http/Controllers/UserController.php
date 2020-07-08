@@ -104,6 +104,7 @@ class UserController extends Controller
 
     /**
      * Add one post.
+     * @id = id user
      *
      * @return Response
      */
@@ -131,10 +132,25 @@ class UserController extends Controller
 
     /**
      * Show user's all post
+     * @id = id user
      *
      * @return Response
      */
     public function userPost($id, Request $request)
+    {
+        $posts = Post::select('id', 'judul', 'isi')
+                ->where('id_users', $id)->get();
+
+        return response()->json(['posts' =>  $posts], 200);
+    }
+
+    /**
+     * Update one user's post.
+     * @id = id post
+     *
+     * @return Response
+     */
+    public function updatePost($id, Request $request)
     {
         //validate incoming request 
         $this->validate($request, [
@@ -143,16 +159,33 @@ class UserController extends Controller
         ]);
 
         try {
-            $post = new Post;
-            $post->id_users = $id;
+            $post = Post::find($id);
             $post->judul = $request->input('judul');
             $post->isi = $request->input('isi');
 
             $post->save();
 
-            return response()->json(['message' => 'Add Post Success!'], 201);
+            return response()->json(['post' => $post, 'message' => 'Updated'], 201);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Add Post Failed!'], 409);
+            return response()->json(['message' => 'Post Update Failed!'], 409);
+        }
+    }
+
+        /**
+     * Delete one user's post.
+     * @id = id post
+     *
+     * @return Response
+     */
+    public function deletePost($id)
+    {
+        try {
+            $post = Post::find($id);
+            $post->delete();
+
+            return response()->json(['message' => 'Post Deleted'], 201);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Post Delete Failed!'], 409);
         }
     }
 
