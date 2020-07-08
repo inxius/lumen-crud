@@ -44,11 +44,18 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     // Matches "/api/post/{iduser}
     $router->post('post/{id}', 'UserController@addPost');
 
+    // Matches "/api/userpost/{iduser}
+    $router->get('userpost/{id}', 'UserController@userPost');
+
+    // Matches "/api/updatepost/{idpost}
+    $router->put('updatepost/{id}', 'UserController@updatePost');
+
+    // Matches "/api/deletepost/{idpost}
+    $router->delete('deletepost/{id}', 'UserController@deletePost');
+
     // Matches "/api/totalposts
     $router->get('totalposts', 'UserController@totalPost');
 
     // Matches "/api/posts
     $router->get('posts', 'UserController@allPost');
- 
- });
- 
+});
