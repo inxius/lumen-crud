@@ -116,17 +116,31 @@ class UserController extends Controller
             'isi' => 'required|string',
         ]);
 
-        try {
-            $post = new Post;
-            $post->id_users = $id;
-            $post->judul = $request->input('judul');
-            $post->isi = $request->input('isi');
-
-            $post->save();
-
-            return response()->json(['message' => 'Add Post Success!'], 201);
-        } catch (\Throwable $th) {
-            return response()->json(['message' => 'Add Post Failed!'], 409);
+        if (User::find($id)) {
+            try {
+                $post = new Post;
+                $post->id_users = $id;
+                $post->judul = $request->input('judul');
+                $post->isi = $request->input('isi');
+    
+                $post->save();
+    
+                return response()->json([
+                    'success' => 1,
+                    'message' => 'Add Post Success!'
+                ], 201);
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'success' => 0,
+                    'message' => 'Add Post Failed!'
+                ], 409);
+            }
+        }
+        else {
+            return response()->json([
+                'success' => 0,
+                'message' => 'Add Post Failed!'
+            ], 409);
         }
     }
 
@@ -138,10 +152,16 @@ class UserController extends Controller
      */
     public function userPost($id, Request $request)
     {
-        $posts = Post::select('id', 'judul', 'isi')
+        if (User::find($id)) {
+            $posts = Post::select('id', 'judul', 'isi')
                 ->where('id_users', $id)->get();
 
-        return response()->json(['posts' =>  $posts], 200);
+            return response()->json(['posts' =>  $posts], 200);
+        } else {
+            return response()->json(['message' => 'User not found!'], 409);
+        }
+        
+        
     }
 
     /**
@@ -158,17 +178,35 @@ class UserController extends Controller
             'isi' => 'required|string',
         ]);
 
-        try {
-            $post = Post::find($id);
-            $post->judul = $request->input('judul');
-            $post->isi = $request->input('isi');
-
-            $post->save();
-
-            return response()->json(['post' => $post, 'message' => 'Updated'], 201);
-        } catch (\Throwable $th) {
-            return response()->json(['message' => 'Post Update Failed!'], 409);
+        // $post = Post::find($id);
+        if (Post::find($id)) {
+            try {
+                $post = Post::find($id);
+                $post->judul = $request->input('judul');
+                $post->isi = $request->input('isi');
+    
+                $post->save();
+    
+                return response()->json([
+                    'success' => 1,
+                    'post' => $post, 
+                    'message' => 'Updated'
+                ], 201);
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'success' => 0,
+                    'message' => 'Post Update Failed!'
+                ], 409);
+            }
+        } else {
+            return response()->json([
+                'success' => 0,
+                'message' => 'Post Update Failed!'
+            ], 409);
         }
+        
+
+        
     }
 
         /**
@@ -179,14 +217,29 @@ class UserController extends Controller
      */
     public function deletePost($id)
     {
-        try {
-            $post = Post::find($id);
-            $post->delete();
-
-            return response()->json(['message' => 'Post Deleted'], 201);
-        } catch (\Throwable $th) {
-            return response()->json(['message' => 'Post Delete Failed!'], 409);
+        if (Post::find($id)) {
+            try {
+                $post = Post::find($id);
+                $post->delete();
+    
+                return response()->json([
+                    'success' => 1,
+                    'message' => 'Post Deleted'
+                ], 201);
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'success' => 0,
+                    'message' => 'Post Delete Failed!'
+                ], 409);
+            }
+        } else {
+            return response()->json([
+                'success' => 0,
+                'message' => 'Post Delete Failed!'
+            ], 409);
         }
+        
+        
     }
 
     /**
